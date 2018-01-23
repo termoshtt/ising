@@ -18,17 +18,7 @@ fn ising2d_sum_of_adjacent_spins(s: &Array2<i64>, m: usize, n: usize, i: usize, 
 fn ising2d_sweep(mut s: Array2<i64>, beta: f64, niter: i64) {
     let m = s.shape()[0];
     let n = s.shape()[1];
-    let prob = [
-        f64::exp(-2.0 * beta * (-4.0)),
-        f64::exp(-2.0 * beta * (-3.0)),
-        f64::exp(-2.0 * beta * (-2.0)),
-        f64::exp(-2.0 * beta * (-1.0)),
-        f64::exp(-2.0 * beta * (0.0)),
-        f64::exp(-2.0 * beta * (1.0)),
-        f64::exp(-2.0 * beta * (2.0)),
-        f64::exp(-2.0 * beta * (3.0)),
-        f64::exp(-2.0 * beta * (4.0)),
-    ];
+    let prob: Vec<f64> = (-4..5).map(|s| (-2.0 * beta * s as f64).exp()).collect();
     let mut rng = XorShiftRng::new_unseeded();
     let iteration = niter / (m * n) as i64;
     for _ in 0..iteration {
