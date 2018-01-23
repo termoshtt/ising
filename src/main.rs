@@ -15,10 +15,10 @@ fn ising2d_sum_of_adjacent_spins(s: &Array2<i8>, m: usize, n: usize, i: usize, j
     return s[(i_bottom, j)] + s[(i_top, j)] + s[(i, j_right)] + s[(i, j_left)];
 }
 
-fn ising2d_sweep(mut s: Array2<i8>, beta: f64, niter: usize) {
+fn ising2d_sweep(mut s: Array2<i8>, beta: f32, niter: usize) {
     let m = s.shape()[0];
     let n = s.shape()[1];
-    let prob: Vec<f64> = (-4..5).map(|s| (-2.0 * beta * s as f64).exp()).collect();
+    let prob: Vec<f32> = (-4..5).map(|s| (-2.0 * beta * s as f32).exp()).collect();
     let mut rng = XorShiftRng::new_unseeded();
     let iteration = niter / (m * n);
     for _ in 0..iteration {
@@ -40,13 +40,13 @@ fn main() {
     let mut s = Array::<i8, _>::zeros((n, n));
     for i in 0..n {
         for j in 0..n {
-            let val: f64 = random();
+            let val: f32 = random();
             s[(i, j)] = if val < 0.5 { -1 } else { 1 };
         }
     }
 
     let niter = 1000_000_000;
-    let beta = (1.0 + 2.0_f64.sqrt()).ln() / 2.0;
+    let beta = (1.0 + 2.0_f32.sqrt()).ln() / 2.0;
     let start = Instant::now();
     ising2d_sweep(s, beta, niter);
     let end = start.elapsed();
