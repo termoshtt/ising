@@ -25,7 +25,6 @@ fn ising2d(mut s: PadArray2<i8>, beta: f32, iter: usize) {
                 n.c
             }
         });
-        s2.fill_periodic();
         mem::swap(&mut s, &mut s2);
     }
 }

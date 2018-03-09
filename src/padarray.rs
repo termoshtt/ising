@@ -38,8 +38,7 @@ impl<A: LinalgScalar> PadArray2<A> {
         (n - 2, m - 2)
     }
 
-    #[inline(never)]
-    pub fn fill_periodic(&mut self) {
+    fn fill_periodic(&mut self) {
         let (n, m) = self.shape();
         for j in 0..m {
             self.data[(0, j + 1)] = self.data[(n - 2, j + 1)];
@@ -51,8 +50,7 @@ impl<A: LinalgScalar> PadArray2<A> {
         }
     }
 
-    #[inline(never)]
-    pub fn st_map<B, F>(&self, out: &mut PadArray2<B>, func: F)
+    fn st_map_core<B, F>(&self, out: &mut PadArray2<B>, func: F)
     where
         B: LinalgScalar,
         F: Fn(Neigbhors<A>) -> B,
@@ -72,5 +70,14 @@ impl<A: LinalgScalar> PadArray2<A> {
                 out[(i + 1) * (m + 2) + (j + 1)] = func(neighbor);
             }
         }
+    }
+
+    pub fn st_map<B, F>(&self, out: &mut PadArray2<B>, func: F)
+    where
+        B: LinalgScalar,
+        F: Fn(Neigbhors<A>) -> B,
+    {
+        self.st_map_core(out, func);
+        out.fill_periodic();
     }
 }
