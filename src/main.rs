@@ -11,6 +11,63 @@ use ndarray::*;
 use rand::{random, Rng};
 use sfmt::SFMT;
 
+struct PadArray2<A: LinalgScalar> {
+    data: Array2<A>,
+}
+
+struct Neigbhors<A> {
+    t: A, // top
+    b: A, // bottom
+    l: A, // left
+    r: A, // right
+    c: A, // center
+}
+
+impl<A: LinalgScalar> PadArray2<A> {
+    fn zeros(n: usize, m: usize) -> Self {
+        Self {
+            data: Array::zeros((n + 2, m + 2)),
+        }
+    }
+
+    fn shape(&self) -> (usize, usize) {
+        let (n, m) = self.data.dim();
+        (n - 2, m - 2)
+    }
+
+    fn fill_periodic(&mut self) {
+        let (n, m) = self.shape();
+        for j in 0..m {
+            self.data[(0, j + 1)] = self.data[(n - 2, j + 1)];
+            self.data[(n - 1, j + 1)] = self.data[(1, j + 1)];
+        }
+        for i in 0..n {
+            self.data[(i + 1, 0)] = self.data[(i + 1, m - 2)];
+            self.data[(i + 1, m - 1)] = self.data[(i + 1, 1)];
+        }
+    }
+
+    fn st_map<B, F>(&self, out: &mut PadArray2<B>, func: F)
+    where
+        B: LinalgScalar,
+        F: Fn(Neigbhors<A>) -> B,
+    {
+        let (n, m) = self.shape();
+        for i in 0..n {
+            for j in 0..m {
+                let neighbor = Neigbhors {
+                    t: self.data[(i + 0, j + 0)],
+                    b: self.data[(i + 2, j + 0)],
+                    l: self.data[(i + 1, j + 0)],
+                    r: self.data[(i + 1, j + 2)],
+                    c: self.data[(i + 1, j + 1)],
+                };
+                out.data[(i + 1, j + 1)] = func(neighbor);
+            }
+        }
+    }
+}
+
 #[inline]
 fn ising2d_sum_of_adjacent_spins(s: &Array2<i8>, m: usize, n: usize, i: usize, j: usize) -> i8 {
     let i_bottom = if i + 1 < m { i + 1 } else { 0 };
