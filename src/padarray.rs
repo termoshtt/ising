@@ -1,11 +1,14 @@
 use ndarray::*;
 
-#[derive(Clone)]
-pub struct PadArray2<A: LinalgScalar> {
-    data: Array2<A>,
+pub trait StencilArray {
+    type Elem: LinalgScalar;
+    fn stencil_map<Func>(&self, out: &mut Self, Func)
+    where
+        Func: Fn(Neigbhors<Self::Elem>) -> Self::Elem;
 }
 
-pub struct Neigbhors<A> {
+#[derive(Clone, Copy)]
+pub struct Neigbhors<A: Clone + Copy> {
     pub t: A, // top
     pub b: A, // bottom
     pub l: A, // left
@@ -13,7 +16,13 @@ pub struct Neigbhors<A> {
     pub c: A, // center
 }
 
-impl<A: LinalgScalar> PadArray2<A> {
+/// Two-dimensional torus
+#[derive(Clone)]
+pub struct Torus2<A: LinalgScalar> {
+    data: Array2<A>,
+}
+
+impl<A: LinalgScalar> Torus2<A> {
     pub fn zeros(n: usize, m: usize) -> Self {
         Self {
             data: Array::zeros((n + 2, m + 2)),
@@ -50,7 +59,7 @@ impl<A: LinalgScalar> PadArray2<A> {
         }
     }
 
-    fn st_map_core<B, F>(&self, out: &mut PadArray2<B>, func: F)
+    fn st_map_core<B, F>(&self, out: &mut Torus2<B>, func: F)
     where
         B: LinalgScalar,
         F: Fn(Neigbhors<A>) -> B,
@@ -71,11 +80,13 @@ impl<A: LinalgScalar> PadArray2<A> {
             }
         }
     }
+}
 
-    pub fn st_map<B, F>(&self, out: &mut PadArray2<B>, func: F)
+impl<A: LinalgScalar> StencilArray for Torus2<A> {
+    type Elem = A;
+    fn stencil_map<F>(&self, out: &mut Self, func: F)
     where
-        B: LinalgScalar,
-        F: Fn(Neigbhors<A>) -> B,
+        F: Fn(Neigbhors<A>) -> A,
     {
         self.st_map_core(out, func);
         out.fill_periodic();
