@@ -17,9 +17,9 @@ fn ising2d(mut s: PadArray2<i8>, beta: f32, iter: usize) {
     let mut s2 = s.clone();
     for _ in 0..iter {
         s.st_map(&mut s2, |n| {
-            let k = n.t + n.b + n.l + n.r;
+            let k = n.t + n.b + n.l + n.r + 4;
             let val: f32 = sfmt::thread_rng().gen();
-            if val < p[(k + 4) as usize] {
+            if val < p[k as usize] {
                 -n.c
             } else {
                 n.c

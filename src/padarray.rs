@@ -58,16 +58,18 @@ impl<A: LinalgScalar> PadArray2<A> {
         F: Fn(Neigbhors<A>) -> B,
     {
         let (n, m) = self.shape();
+        let data = self.data.as_slice().unwrap();
+        let out = out.data.as_slice_mut().unwrap();
         for i in 0..n {
             for j in 0..m {
                 let neighbor = Neigbhors {
-                    t: self.data[(i + 0, j + 0)],
-                    b: self.data[(i + 2, j + 0)],
-                    l: self.data[(i + 1, j + 0)],
-                    r: self.data[(i + 1, j + 2)],
-                    c: self.data[(i + 1, j + 1)],
+                    t: data[(i + 0) * (m + 2) + (j + 0)],
+                    b: data[(i + 2) * (m + 2) + (j + 0)],
+                    l: data[(i + 1) * (m + 2) + (j + 0)],
+                    r: data[(i + 1) * (m + 2) + (j + 2)],
+                    c: data[(i + 1) * (m + 2) + (j + 1)],
                 };
-                out.data[(i + 1, j + 1)] = func(neighbor);
+                out[(i + 1) * (m + 2) + (j + 1)] = func(neighbor);
             }
         }
     }
