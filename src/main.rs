@@ -1,5 +1,5 @@
 // thanks to κeen
-//
+
 extern crate ndarray;
 extern crate rand;
 extern crate sfmt;
@@ -80,7 +80,7 @@ fn ising2d_sum_of_adjacent_spins(s: &Array2<i8>, m: usize, n: usize, i: usize, j
 fn ising2d_sweep(mut s: Array2<i8>, beta: f32, niter: usize) {
     let m = s.shape()[0];
     let n = s.shape()[1];
-    let prob: Vec<f32> = (-4..5).map(|s| (-2.0 * beta * s as f32).exp()).collect();
+    let p = prob(beta);
     let mut rng = SFMT::new(1234);
     let iteration = niter / (m * n);
     for _ in 0..iteration {
@@ -89,12 +89,16 @@ fn ising2d_sweep(mut s: Array2<i8>, beta: f32, niter: usize) {
                 let s1 = s[(i, j)];
                 let k = s1 * ising2d_sum_of_adjacent_spins(&s, m, n, i, j);
                 let val = rng.gen_range(0., 1.);
-                if val < prob[(k + 4) as usize] {
+                if val < p[(k + 4) as usize] {
                     s[(i, j)] = -s1;
                 }
             }
         }
     }
+}
+
+fn prob(beta: f32) -> Vec<f32> {
+    (-4..5).map(|s| (-2.0 * beta * s as f32).exp()).collect()
 }
 
 fn init(n: usize, m: usize) -> Array2<i8> {
