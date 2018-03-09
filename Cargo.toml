@@ -4,8 +4,9 @@ version = "0.1.0"
 authors = ["SatoshiTeraaki <terasakisatoshi.math@gmail.com>"]
 
 [dependencies]
-ndarray = "0.11.0"
+ndarray = "0.11"
 rand = "0.4"
+sfmt = "0.2"
 
 [profile.release]
 opt-level = 3

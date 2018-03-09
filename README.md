@@ -1,4 +1,7 @@
 # ising
+
+[![Build Status](https://travis-ci.org/termoshtt/ising.svg?branch=master)](https://travis-ci.org/termoshtt/ising)
+
 Ising model in Rust
 
 License
