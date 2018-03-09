@@ -1,39 +1,19 @@
-// thanks to κeen
-
+extern crate ising;
 extern crate ndarray;
 extern crate rand;
 extern crate sfmt;
 #[macro_use]
 extern crate timeit;
 
-mod torus;
-
 use std::mem;
 use rand::{random, Rng};
-use ndarray::LinalgScalar;
-use torus::Torus2;
-
-pub trait StencilArray {
-    type Elem: LinalgScalar;
-    fn stencil_map<Func>(&self, out: &mut Self, Func)
-    where
-        Func: Fn(Neigbhors<Self::Elem>) -> Self::Elem;
-}
-
-#[derive(Clone, Copy)]
-pub struct Neigbhors<A: Clone + Copy> {
-    pub t: A, // top
-    pub b: A, // bottom
-    pub l: A, // left
-    pub r: A, // right
-    pub c: A, // center
-}
+use ising::{StencilArray, torus::Torus2};
 
 fn ising2d<Arr>(mut s: Arr, beta: f32, iter: usize)
 where
     Arr: StencilArray<Elem = i8> + Clone,
 {
-    let p = prob(beta);
+    let p = ising::trans_prob(beta);
     let mut s2 = s.clone();
     for _ in 0..iter {
         s.stencil_map(&mut s2, |n| {
@@ -47,10 +27,6 @@ where
         });
         mem::swap(&mut s, &mut s2);
     }
-}
-
-fn prob(beta: f32) -> Vec<f32> {
-    (-4..5).map(|s| (-2.0 * beta * s as f32).exp()).collect()
 }
 
 fn init(n: usize, m: usize) -> Torus2<i8> {
