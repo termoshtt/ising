@@ -3,8 +3,9 @@
 extern crate ndarray;
 extern crate rand;
 extern crate sfmt;
+#[macro_use]
+extern crate timeit;
 
-use std::time::Instant;
 use ndarray::*;
 
 use rand::{random, Rng};
@@ -39,24 +40,23 @@ fn ising2d_sweep(mut s: Array2<i8>, beta: f32, niter: usize) {
     }
 }
 
-fn main() {
-    let n = 100;
-    let mut s = Array::<i8, _>::zeros((n, n));
+fn init(n: usize, m: usize) -> Array2<i8> {
+    let mut s = Array::<i8, _>::zeros((n, m));
     for i in 0..n {
-        for j in 0..n {
+        for j in 0..m {
             let val: f32 = random();
             s[(i, j)] = if val < 0.5 { -1 } else { 1 };
         }
     }
+    s
+}
 
+fn main() {
+    let n = 100;
     let niter = 1000_000_000;
     let beta = (1.0 + 2.0_f32.sqrt()).ln() / 2.0;
-    let start = Instant::now();
-    ising2d_sweep(s, beta, niter);
-    let end = start.elapsed();
-    println!(
-        "{}.{:03}秒経過しました。",
-        end.as_secs(),
-        end.subsec_nanos() / 1_000_000
-    );
+    timeit!({
+        let s = init(n, n);
+        ising2d_sweep(s, beta, niter);
+    });
 }

@@ -7,6 +7,7 @@ authors = ["SatoshiTeraaki <terasakisatoshi.math@gmail.com>"]
 ndarray = "0.11"
 rand = "0.4"
 sfmt = "0.2"
+timeit = "0.1"
 
 [profile.release]
 opt-level = 3
