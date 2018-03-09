@@ -10,3 +10,4 @@ Cargo.lock
 **/*.rs.bk
 
 rusty-tags.*
+perf.data*
