@@ -6,11 +6,28 @@ extern crate sfmt;
 #[macro_use]
 extern crate timeit;
 
-mod padarray;
+mod torus;
 
 use std::mem;
 use rand::{random, Rng};
-use padarray::*;
+use ndarray::LinalgScalar;
+use torus::Torus2;
+
+pub trait StencilArray {
+    type Elem: LinalgScalar;
+    fn stencil_map<Func>(&self, out: &mut Self, Func)
+    where
+        Func: Fn(Neigbhors<Self::Elem>) -> Self::Elem;
+}
+
+#[derive(Clone, Copy)]
+pub struct Neigbhors<A: Clone + Copy> {
+    pub t: A, // top
+    pub b: A, // bottom
+    pub l: A, // left
+    pub r: A, // right
+    pub c: A, // center
+}
 
 fn ising2d<Arr>(mut s: Arr, beta: f32, iter: usize)
 where

@@ -1,20 +1,5 @@
 use ndarray::*;
-
-pub trait StencilArray {
-    type Elem: LinalgScalar;
-    fn stencil_map<Func>(&self, out: &mut Self, Func)
-    where
-        Func: Fn(Neigbhors<Self::Elem>) -> Self::Elem;
-}
-
-#[derive(Clone, Copy)]
-pub struct Neigbhors<A: Clone + Copy> {
-    pub t: A, // top
-    pub b: A, // bottom
-    pub l: A, // left
-    pub r: A, // right
-    pub c: A, // center
-}
+use super::{Neigbhors, StencilArray};
 
 /// Two-dimensional torus
 #[derive(Clone)]
