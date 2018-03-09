@@ -6,7 +6,7 @@ authors = ["SatoshiTeraaki <terasakisatoshi.math@gmail.com>"]
 [dependencies]
 ndarray = "0.11"
 rand = "0.4"
-sfmt = "0.2"
+sfmt = "0.2.1"
 timeit = "0.1"
 
 [profile.release]
