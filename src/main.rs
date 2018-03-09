@@ -1,10 +1,14 @@
 // thanks to κeen
+//
 extern crate ndarray;
 extern crate rand;
+extern crate sfmt;
 
-use ndarray::prelude::*;
-use rand::{random, Rng, XorShiftRng};
 use std::time::Instant;
+use ndarray::*;
+
+use rand::{random, Rng};
+use sfmt::SFMT;
 
 #[inline]
 fn ising2d_sum_of_adjacent_spins(s: &Array2<i8>, m: usize, n: usize, i: usize, j: usize) -> i8 {
@@ -19,7 +23,7 @@ fn ising2d_sweep(mut s: Array2<i8>, beta: f32, niter: usize) {
     let m = s.shape()[0];
     let n = s.shape()[1];
     let prob: Vec<f32> = (-4..5).map(|s| (-2.0 * beta * s as f32).exp()).collect();
-    let mut rng = XorShiftRng::new_unseeded();
+    let mut rng = SFMT::new(1234);
     let iteration = niter / (m * n);
     for _ in 0..iteration {
         for i in 0..m {
