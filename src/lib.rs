@@ -1,6 +1,7 @@
 // thanks to κeen
 #![feature(conservative_impl_trait)]
 
+#[macro_use]
 extern crate ndarray;
 extern crate rand;
 extern crate sfmt;
@@ -8,13 +9,22 @@ extern crate sfmt;
 pub mod torus;
 
 use rand::Rng;
-use ndarray::LinalgScalar;
+use ndarray::*;
 
 pub trait StencilArray {
     type Elem: LinalgScalar;
     fn stencil_map<Func>(&self, out: &mut Self, Func)
     where
         Func: Fn(Neigbhors<Self::Elem>) -> Self::Elem;
+
+    fn shape(&self) -> (usize, usize);
+}
+
+pub trait Viewable {
+    type Elem: LinalgScalar;
+    type Dim: Dimension;
+    fn as_view(&self) -> ArrayView<Self::Elem, Self::Dim>;
+    fn as_view_mut(&mut self) -> ArrayViewMut<Self::Elem, Self::Dim>;
 }
 
 #[derive(Clone, Copy)]

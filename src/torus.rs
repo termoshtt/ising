@@ -1,6 +1,6 @@
 use ndarray::*;
 use rand::random;
-use super::{Neigbhors, StencilArray};
+use super::*;
 
 /// Two-dimensional torus
 #[derive(Clone)]
@@ -26,11 +26,6 @@ impl<A: LinalgScalar> Torus2<A> {
             }
         }
         z
-    }
-
-    pub fn shape(&self) -> (usize, usize) {
-        let (n, m) = self.data.dim();
-        (n - 2, m - 2)
     }
 
     fn fill_periodic(&mut self) {
@@ -82,5 +77,23 @@ impl<A: LinalgScalar> StencilArray for Torus2<A> {
     {
         self.st_map_core(out, func);
         out.fill_periodic();
+    }
+
+    fn shape(&self) -> (usize, usize) {
+        let (n, m) = self.data.dim();
+        (n - 2, m - 2)
+    }
+}
+
+impl<A: LinalgScalar> Viewable for Torus2<A> {
+    type Elem = A;
+    type Dim = Ix2;
+
+    fn as_view(&self) -> ArrayView2<A> {
+        self.data.slice(s![1..-1, 1..-1])
+    }
+
+    fn as_view_mut(&mut self) -> ArrayViewMut2<A> {
+        self.data.slice_mut(s![1..-1, 1..-1])
     }
 }
