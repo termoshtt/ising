@@ -31,8 +31,8 @@ where
 }
 
 fn main() {
-    let n = 300;
-    let iter = 10;
+    let n = 100;
+    let iter = 1000;
     let beta = (1.0 + 2.0_f32.sqrt()).ln() / 2.0;
     let s = Torus2::random_spin(n, n);
     fs::create_dir_all("movie").unwrap();
