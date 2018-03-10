@@ -1,7 +1,7 @@
 // thanks to κeen
 
 extern crate ndarray;
-extern crate sfmt;
+extern crate rand;
 
 pub mod torus;
 

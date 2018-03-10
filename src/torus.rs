@@ -1,4 +1,5 @@
 use ndarray::*;
+use rand::random;
 use super::{Neigbhors, StencilArray};
 
 /// Two-dimensional torus
@@ -64,6 +65,12 @@ impl<A: LinalgScalar> Torus2<A> {
                 out[(i + 1) * (m + 2) + (j + 1)] = func(neighbor);
             }
         }
+    }
+}
+
+impl Torus2<i8> {
+    pub fn random_spin(n: usize, m: usize) -> Self {
+        Self::from_map(n, m, |_, _| if random::<f32>() < 0.5 { -1 } else { 1 })
     }
 }
 

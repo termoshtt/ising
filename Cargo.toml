@@ -6,6 +6,8 @@ authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>", "SatoshiTeraaki <ter
 [dependencies]
 ndarray = "0.11"
 rand = "0.4"
+
+[dev-dependencies]
 sfmt = "0.2.1"
 timeit = "0.1"
 

@@ -6,7 +6,7 @@ extern crate sfmt;
 extern crate timeit;
 
 use std::mem;
-use rand::{random, Rng};
+use rand::Rng;
 use ising::{StencilArray, torus::Torus2};
 
 fn ising2d<Arr>(mut s: Arr, beta: f32, iter: usize)
@@ -29,16 +29,12 @@ where
     }
 }
 
-fn init(n: usize, m: usize) -> Torus2<i8> {
-    Torus2::from_map(n, m, |_, _| if random::<f32>() < 0.5 { -1 } else { 1 })
-}
-
 fn main() {
     let n = 100;
     let iter = 100_000;
     let beta = (1.0 + 2.0_f32.sqrt()).ln() / 2.0;
     timeit!({
-        let s = init(n, n);
+        let s = Torus2::random_spin(n, n);
         ising2d(s, beta, iter);
     });
 }
