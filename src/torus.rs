@@ -1,19 +1,14 @@
 use ndarray::*;
+use rand::random;
+use super::{Neigbhors, StencilArray};
 
+/// Two-dimensional torus
 #[derive(Clone)]
-pub struct PadArray2<A: LinalgScalar> {
+pub struct Torus2<A: LinalgScalar> {
     data: Array2<A>,
 }
 
-pub struct Neigbhors<A> {
-    pub t: A, // top
-    pub b: A, // bottom
-    pub l: A, // left
-    pub r: A, // right
-    pub c: A, // center
-}
-
-impl<A: LinalgScalar> PadArray2<A> {
+impl<A: LinalgScalar> Torus2<A> {
     pub fn zeros(n: usize, m: usize) -> Self {
         Self {
             data: Array::zeros((n + 2, m + 2)),
@@ -38,8 +33,7 @@ impl<A: LinalgScalar> PadArray2<A> {
         (n - 2, m - 2)
     }
 
-    #[inline(never)]
-    pub fn fill_periodic(&mut self) {
+    fn fill_periodic(&mut self) {
         let (n, m) = self.shape();
         for j in 0..m {
             self.data[(0, j + 1)] = self.data[(n - 2, j + 1)];
@@ -51,8 +45,7 @@ impl<A: LinalgScalar> PadArray2<A> {
         }
     }
 
-    #[inline(never)]
-    pub fn st_map<B, F>(&self, out: &mut PadArray2<B>, func: F)
+    fn st_map_core<B, F>(&self, out: &mut Torus2<B>, func: F)
     where
         B: LinalgScalar,
         F: Fn(Neigbhors<A>) -> B,
@@ -72,5 +65,22 @@ impl<A: LinalgScalar> PadArray2<A> {
                 out[(i + 1) * (m + 2) + (j + 1)] = func(neighbor);
             }
         }
+    }
+}
+
+impl Torus2<i8> {
+    pub fn random_spin(n: usize, m: usize) -> Self {
+        Self::from_map(n, m, |_, _| if random::<f32>() < 0.5 { -1 } else { 1 })
+    }
+}
+
+impl<A: LinalgScalar> StencilArray for Torus2<A> {
+    type Elem = A;
+    fn stencil_map<F>(&self, out: &mut Self, func: F)
+    where
+        F: Fn(Neigbhors<A>) -> A,
+    {
+        self.st_map_core(out, func);
+        out.fill_periodic();
     }
 }
