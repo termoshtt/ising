@@ -9,7 +9,7 @@ rand = "0.4"
 sfmt = "0.2.1"
 
 [dev-dependencies]
-timeit = "0.1"
+image = "*"
 
 [profile.release]
 opt-level = 3

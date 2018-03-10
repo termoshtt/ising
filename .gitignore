@@ -11,3 +11,4 @@ Cargo.lock
 
 rusty-tags.*
 perf.data*
+/movie/
